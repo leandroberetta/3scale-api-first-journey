@@ -1,4 +1,4 @@
-# API First Journey with 3scale
+# API First Journey with 3scale
 
 Work in progress.
 
