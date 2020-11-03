@@ -11,18 +11,9 @@ public class Song {
 
     private String name;
     private String artist;
-    private String lyricsId;
-    private Long albumId;
+    private String album;
 
     public Song() {
-    }
-
-    public Long getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(Long albumId) {
-        this.albumId = albumId;
     }
 
     public Long getId() {
@@ -49,11 +40,12 @@ public class Song {
         this.artist = artist;
     }
 
-    public String getLyricsId() {
-        return lyricsId;
+    public String getAlbum() {
+        return album;
     }
 
-    public void setLyricsId(String lyricId) {
-        this.lyricsId = lyricId;
+    public void setAlbum(String album) {
+        this.album = album;
     }
+
 }

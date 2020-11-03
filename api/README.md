@@ -3,7 +3,14 @@
 ## OpenShift
 
 ```bash
+oc new-project api-dev
 
+oc new-build redhat-openjdk18-openshift:1.8~https://github.com/leandroberetta/3scale-api-first-journey.git \
+    --context-dir=api \
+    --name songs \
+    -n api-dev
+
+oc apply -k ./api/manifests/overlays/dev -n api-dev
 ```
 
 ## Local

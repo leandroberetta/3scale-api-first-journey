@@ -96,8 +96,7 @@ public class SongController {
 
             actualSong.setName(updatedSong.getName());
             actualSong.setArtist(updatedSong.getArtist());
-            actualSong.setLyricsId(updatedSong.getLyricsId());
-            actualSong.setAlbumId(updatedSong.getAlbumId());
+            actualSong.setAlbum(updatedSong.getAlbum());
 
             return ResponseEntity.ok(repository.save(actualSong));
         } else 

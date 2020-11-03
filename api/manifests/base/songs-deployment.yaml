@@ -22,7 +22,7 @@ spec:
         version: v1
     spec:
       containers:
-        - image: image-registry.openshift-image-registry.svc.cluster.local:5000/api-dev/songs:1.0.0
+        - image: image-registry.openshift-image-registry.svc.cluster.local:5000/api-dev/songs:latest
           env:
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
