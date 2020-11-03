@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: songs
+    version: v1
+  name: songs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: songs
+      version: v1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: songs
+        version: v1
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc.cluster.local:5000/api-dev/songs:1.0.0
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: songs-postgresql
+                  key: password
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: songs-postgresql
+                  key: user
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://songs-postgresql:5432/right-lyrics
+          imagePullPolicy: Always
+          name: songs
+          ports:
+            - containerPort: 8080

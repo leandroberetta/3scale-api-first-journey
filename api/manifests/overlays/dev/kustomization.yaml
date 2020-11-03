@@ -1,0 +1,8 @@
+bases:
+  - ../../base
+secretGenerator:
+  - name: songs-postgresql
+    literals:
+      - user=right-lyrics
+      - password=right-lyrics
+      - database=right-lyrics
