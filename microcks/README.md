@@ -46,19 +46,3 @@ spec:
 Finally, verify that all the pods are running.
 
 ![microcks](./images/microcks3.png)
-
-
-
-
-
-```bash
-oc set env dc/apicurio-studio-api APICURIO_MICROCKS_API_URL=https://microcks-microcks.apps.nano.80bd.sandbox847.opentlc.com/api -n apicurio
-oc set env dc/apicurio-studio-api APICURIO_MICROCKS_CLIENT_ID=microcks-serviceaccount -n apicurio
-oc set env dc/apicurio-studio-api APICURIO_MICROCKS_CLIENT_SECRET=ab54d329-e435-41ae-a900-ec6b3fe15c54 -n apicurio
-
-oc set env dc/apicurio-studio-ws APICURIO_MICROCKS_API_URL=https://api-first-microcks-microcks.apps.nano.80bd.sandbox847.opentlc.com/api -n apicurio
-oc set env dc/apicurio-studio-ws APICURIO_MICROCKS_CLIENT_ID=microcks-serviceaccount -n apicurio
-oc set env dc/apicurio-studio-ws APICURIO_MICROCKS_CLIENT_SECRET=ab54d329-e435-41ae-a900-ec6b3fe15c54 -n apicurio
-
-oc set env dc/apicurio-studio-ui APICURIO_UI_FEATURE_MICROCKS=true -n apicurio
-```
