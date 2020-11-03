@@ -1,0 +1,292 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Songs",
+        "version": "1.0.0",
+        "description": "Songs API"
+    },
+    "paths": {
+        "/api/songs": {
+            "get": {
+                "parameters": [
+                    {
+                        "examples": {
+                            "Get all with filter": {
+                                "value": [
+                                    {
+                                        "id": 2,
+                                        "name": "Californication",
+                                        "artist": "Red Hot Chili Peppers",
+                                        "album": "Californication"
+                                    }
+                                ]
+                            }
+                        },
+                        "name": "filter",
+                        "description": "",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Song"
+                                    }
+                                },
+                                "examples": {
+                                    "Get all": {
+                                        "value": [
+                                            {
+                                                "id": 2,
+                                                "name": "Even Flow",
+                                                "artist": "Pearl Jam",
+                                                "album": "Ten"
+                                            },
+                                            {
+                                                "id": 3,
+                                                "name": "Californication",
+                                                "artist": "Red Hot Chili Peppers",
+                                                "album": "Californication"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Ok"
+                    }
+                }
+            },
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Song"
+                            },
+                            "examples": {
+                                "Create": {
+                                    "value": {
+                                        "name": "Californication",
+                                        "artist": "Red Hot Chili Peppers",
+                                        "album": "Californication"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Song"
+                                },
+                                "examples": {
+                                    "Create response": {
+                                        "value": {
+                                            "id": 3,
+                                            "name": "Californication",
+                                            "artist": "Red Hot Chili Peppers",
+                                            "album": "Californication"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Ok"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "filter",
+                    "description": "",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "in": "query"
+                }
+            ]
+        },
+        "/api/songs/{id}": {
+            "get": {
+                "parameters": [
+                    {
+                        "examples": {
+                            "Get with id": {
+                                "value": "1"
+                            }
+                        },
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Song"
+                                },
+                                "examples": {
+                                    "Get with id": {
+                                        "value": {
+                                            "id": 1,
+                                            "name": "Californication",
+                                            "artist": "Red Hot Chili Peppers",
+                                            "album": "Californication"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Ok"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Song"
+                            },
+                            "examples": {
+                                "Update": {
+                                    "value": {
+                                        "id": 1,
+                                        "name": "Californication",
+                                        "artist": "Red Hot Chili Peppers",
+                                        "album": "Californication"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "parameters": [
+                    {
+                        "examples": {
+                            "Update with id": {
+                                "value": "1"
+                            }
+                        },
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Song"
+                                },
+                                "examples": {
+                                    "Update response": {
+                                        "value": {
+                                            "id": 1,
+                                            "name": "Californication",
+                                            "artist": "Red Hot Chili Peppers",
+                                            "album": "Californication"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Ok"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "examples": {
+                            "Delete with id": {
+                                "value": "1"
+                            }
+                        },
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "in": "path",
+                    "required": true
+                }
+            ]
+        }
+    },
+    "components": {
+        "schemas": {
+            "Song": {
+                "title": "Root Type for Song",
+                "description": "",
+                "required": [],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "artist": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "album": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "name": "Even Flow",
+                    "artist": "Pearl Jam",
+                    "lyricsId": "5f0e3eafba80b5001a43e08e"
+                }
+            }
+        }
+    }
+}

@@ -19,4 +19,4 @@ This repository aims to be a reference to implement an API First approach using 
 1. [Microcks](./microcks/README.md)
 2. [Apicurio](./apicurio/README.md)
 3. [Jenkins](./jenkins/README.md)
-4. [The API](./api/README.md)
+4. [Pipelines](./jenkins/pipelines/README.md)
