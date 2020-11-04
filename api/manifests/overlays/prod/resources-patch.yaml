@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: songs-service
+  name: songs
 spec:
   replicas: 2
   template:
     spec:
       containers:
-        - name: songs-service
+        - name: songs
           resources:
             limits:
               memory: 256Mi

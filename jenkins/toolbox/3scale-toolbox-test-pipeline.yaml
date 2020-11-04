@@ -2,7 +2,7 @@ apiVersion: v1
 kind: BuildConfig
 metadata:
   labels:
-  name: 3scale-toolbox-pipeline
+  name: 3scale-toolbox-test-pipeline
 spec:
   strategy:
     jenkinsPipelineStrategy:
@@ -15,13 +15,13 @@ spec:
             }
             stages {                
                 stage("Run 3scale toolbox") {
-                  agent {
-                      label "jenkins-3scale-toolbox-agent"
-                  }
-                  steps {
-                      sh "3scale --help"
-                }
-              }    
+                    agent {
+                        label "jenkins-3scale-toolbox-agent"
+                    }
+                    steps {
+                        sh "3scale --help"
+                    }
+                }    
             }
         }
     type: JenkinsPipeline

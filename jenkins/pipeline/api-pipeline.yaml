@@ -1,0 +1,196 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  labels:
+  name: api-pipeline
+spec:
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        pipeline {
+            agent {
+                label "maven"
+            }
+            environment {
+                GIT_REPO_URL = "https://github.com/leandroberetta/3scale-api-first-journey"
+                GIT_REPO_BRANCH = "master"
+                API_NAME = "songs"
+                API_CONTEXT_DIR = "api"
+                API_DEV_NAMESPACE = "api-dev"
+                API_TEST_NAMESPACE = "api-test"
+                API_PROD_NAMESPACE = "api-prod"
+                IMAGE_REGISTRY = "image-registry.openshift-image-registry.svc.cluster.local:5000"
+            }
+            options { 
+                skipDefaultCheckout()
+                disableConcurrentBuilds()
+            }
+            stages {                
+                stage("Clone") {
+                    steps {
+                        git(url: "$GIT_REPO_URL", branch: "$GIT_REPO_BRANCH")
+                    }
+                }
+                stage("Compile") {
+                    steps {
+                        dir("$API_CONTEXT_DIR") {
+                            sh "mvn package -DskipTests"
+                        }
+                    }
+                }
+                stage("Test") {
+                    steps {
+                        dir("$API_CONTEXT_DIR") {
+                            sh "mvn test"
+                        }                        
+                    }
+                }
+                stage("Build") {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_DEV_NAMESPACE") {
+                                    bc = openshift.selector("bc/$API_NAME")
+
+                                    if (!bc.exists()) {
+                                        openshift.raw("new-build -i redhat-openjdk18-openshift:1.8 --binary --name=$API_NAME")
+                                    }
+
+                                    dir("$API_CONTEXT_DIR") {
+                                        openshift.selector("bc/$API_NAME").startBuild("--from-dir=./target", "--wait=true")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("Tag") {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_DEV_NAMESPACE") {
+                                    script {
+                                        dir("$API_CONTEXT_DIR") {
+                                            env.VERSION = readMavenPom().getVersion()
+
+                                            openshift.tag("$API_DEV_NAMESPACE/$API_NAME:latest", "$API_DEV_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER")        
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }                
+                stage("Deploy DEV") {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_DEV_NAMESPACE") {
+                                    dir("$API_CONTEXT_DIR") {
+                                        newImage = '''
+                                            images:
+                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
+                                                newTag: $VERSION-$BUILD_NUMBER
+                                            '''.stripIndent()
+                                        
+                                        sh "echo \"$newImage\" >> ./manifests/overlays/dev/kustomization.yaml"
+
+                                        openshift.raw("apply -k ./manifests/overlays/dev")
+
+                                        openshift.selector("deployment/$API_NAME").rollout().status()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }    
+                stage("Promote TEST") {
+                    steps {
+                        input("Promote TEST?")
+
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_TEST_NAMESPACE") {
+                                    script {
+                                        dir("$API_CONTEXT_DIR") {
+                                            env.VERSION = readMavenPom().getVersion()
+
+                                            openshift.tag("$API_DEV_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("Deploy TEST") {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_TEST_NAMESPACE") {
+                                    dir("$API_CONTEXT_DIR") {
+                                        newImage = '''
+                                            images:
+                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY/$API_TEST_NAMESPACE/$API_NAME
+                                                newTag: $VERSION-$BUILD_NUMBER
+                                            '''.stripIndent()
+                                        
+                                        sh "echo \"$newImage\" >> ./manifests/overlays/test/kustomization.yaml"
+
+                                        openshift.raw("apply -k ./manifests/overlays/test")
+
+                                        openshift.selector("deployment/$API_NAME").rollout().status()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("Promote PROD") {
+                    steps {
+                        input("Promote PROD?")
+
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_PROD_NAMESPACE") {
+                                    script {
+                                        dir("$API_CONTEXT_DIR") {
+                                            env.VERSION = readMavenPom().getVersion()
+
+                                            openshift.tag("$API_TEST_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("Deploy PROD") {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject("$API_PROD_NAMESPACE") {
+                                    dir("$API_CONTEXT_DIR") {
+                                        newImage = '''
+                                            images:
+                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY/$API_PROD_NAMESPACE/$API_NAME
+                                                newTag: $VERSION-$BUILD_NUMBER
+                                            '''.stripIndent()
+                                        
+                                        sh "echo \"$newImage\" >> ./manifests/overlays/prod/kustomization.yaml"
+
+                                        openshift.raw("apply -k ./manifests/overlays/prod")
+
+                                        openshift.selector("deployment/$API_NAME").rollout().status()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }    
+        }
+    type: JenkinsPipeline
