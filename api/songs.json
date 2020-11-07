@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Songs",
+        "title": "Songs API",
         "version": "1.0.0",
         "description": "Songs API"
     },

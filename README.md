@@ -20,3 +20,4 @@ This repository aims to be a reference to implement an API First approach using 
 2. [Apicurio](./apicurio/README.md)
 3. [Jenkins](./jenkins/README.md)
 4. [Pipeline](./jenkins/pipeline/README.md)
+5. [3scale](./3scale/README.md)
