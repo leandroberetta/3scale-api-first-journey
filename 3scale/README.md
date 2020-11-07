@@ -1,4 +1,4 @@
-# 3scale
+# 3scale
 
 ## Installation
 
@@ -6,7 +6,7 @@
 oc create namespace 3scale
 ```
 
-### Prerequisites
+### Prerequisites
 
 * 3scale 2.9 Operator installed in 3cale namespace
 * OpenShift Container Storage 4 (for the RWX storage needed by 3scale)
@@ -27,7 +27,7 @@ spec:
   wildcardDomain: $WILDCARD_DOMAIN" | oc apply -f - -n 3scale
 ```
 
-## Tenants
+## Tenants
 
 ### TEST
 
