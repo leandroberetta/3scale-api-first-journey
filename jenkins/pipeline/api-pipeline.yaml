@@ -5,21 +5,39 @@ metadata:
   name: api-pipeline
 spec:
   strategy:
+    type: JenkinsPipeline
     jenkinsPipelineStrategy:
+      env:
+        - name: GIT_REPO_URL
+          value: https://github.com/leandroberetta/3scale-api-first-journey
+        - name: GIT_REPO_BRANCH
+          value: master
+        - name: IMAGE_REGISTRY_URL
+          value: image-registry.openshift-image-registry.svc.cluster.local:5000
+        - name: API_NAME
+          value: songs
+        - name: API_CONTEXT_DIR
+          value: api
+        - name: API_DEV_NAMESPACE
+          value: api-dev
+        - name: API_TEST_NAMESPACE
+          value: api-test
+        - name: API_BACKEND_TEST
+          value: http://songs.api-test.svc.cluster.local:8080
+        - name: API_PROD_NAMESPACE
+          value: api-prod
+        - name: API_BACKEND_PROD
+          value: http://songs.api-prod.svc.cluster.local:8080
+        - name: API_TEST_TENANT
+          value: test-tenant
+        - name: API_PROD_TENANT
+          value: prod-tenant     
+        - name: API_OPENAPI_SPEC_FILE
+          value: songs.json
       jenkinsfile: |-
         pipeline {
             agent {
                 label "maven"
-            }
-            environment {
-                GIT_REPO_URL = "https://github.com/leandroberetta/3scale-api-first-journey"
-                GIT_REPO_BRANCH = "master"
-                API_NAME = "songs"
-                API_CONTEXT_DIR = "api"
-                API_DEV_NAMESPACE = "api-dev"
-                API_TEST_NAMESPACE = "api-test"
-                API_PROD_NAMESPACE = "api-prod"
-                IMAGE_REGISTRY = "image-registry.openshift-image-registry.svc.cluster.local:5000"
             }
             options { 
                 skipDefaultCheckout()
@@ -29,6 +47,8 @@ spec:
                 stage("Clone") {
                     steps {
                         git(url: "$GIT_REPO_URL", branch: "$GIT_REPO_BRANCH")
+
+                        stash "repo"
                     }
                 }
                 stage("Compile") {
@@ -89,15 +109,13 @@ spec:
                                     dir("$API_CONTEXT_DIR") {
                                         newImage = '''
                                             images:
-                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
-                                                newName: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
+                                              - name: $IMAGE_REGISTRY_URL/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY_URL/$API_DEV_NAMESPACE/$API_NAME
                                                 newTag: $VERSION-$BUILD_NUMBER
                                             '''.stripIndent()
                                         
                                         sh "echo \"$newImage\" >> ./manifests/overlays/dev/kustomization.yaml"
-
                                         openshift.raw("apply -k ./manifests/overlays/dev")
-
                                         openshift.selector("deployment/$API_NAME").rollout().status()
                                     }
                                 }
@@ -112,13 +130,7 @@ spec:
                         script {
                             openshift.withCluster() {
                                 openshift.withProject("$API_TEST_NAMESPACE") {
-                                    script {
-                                        dir("$API_CONTEXT_DIR") {
-                                            env.VERSION = readMavenPom().getVersion()
-
-                                            openshift.tag("$API_DEV_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
-                                        }
-                                    }
+                                    openshift.tag("$API_DEV_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
                                 }
                             }
                         }
@@ -132,20 +144,34 @@ spec:
                                     dir("$API_CONTEXT_DIR") {
                                         newImage = '''
                                             images:
-                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
-                                                newName: $IMAGE_REGISTRY/$API_TEST_NAMESPACE/$API_NAME
+                                              - name: $IMAGE_REGISTRY_URL/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY_URL/$API_TEST_NAMESPACE/$API_NAME
                                                 newTag: $VERSION-$BUILD_NUMBER
                                             '''.stripIndent()
                                         
                                         sh "echo \"$newImage\" >> ./manifests/overlays/test/kustomization.yaml"
-
                                         openshift.raw("apply -k ./manifests/overlays/test")
-
                                         openshift.selector("deployment/$API_NAME").rollout().status()
                                     }
                                 }
                             }
                         }
+                    }
+                }
+                stage("Import OpenAPI TEST") {
+                    agent {
+                        label "jenkins-3scale-toolbox-agent"
+                    }
+                    steps {
+                        unstash "repo"
+
+                        sh "3scale remote add $API_TEST_TENANT $TEST_TENANT_REMOTE --insecure"
+
+                        dir("$API_CONTEXT_DIR") {
+                            sh "3scale import openapi --insecure -d $API_TEST_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_TEST -t $API_NAME --skip-openapi-validation --default-credentials-userkey=123456789"
+                        }
+                        
+                        sh "3scale proxy-config promote $API_TEST_TENANT $API_NAME --insecure"
                     }
                 }
                 stage("Promote PROD") {
@@ -155,12 +181,8 @@ spec:
                         script {
                             openshift.withCluster() {
                                 openshift.withProject("$API_PROD_NAMESPACE") {
-                                    script {
-                                        dir("$API_CONTEXT_DIR") {
-                                            env.VERSION = readMavenPom().getVersion()
-
-                                            openshift.tag("$API_TEST_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
-                                        }
+                                    dir("$API_CONTEXT_DIR") {
+                                        openshift.tag("$API_TEST_NAMESPACE/$API_NAME:$VERSION-$BUILD_NUMBER", "$API_NAME:$VERSION-$BUILD_NUMBER")        
                                     }
                                 }
                             }
@@ -175,15 +197,13 @@ spec:
                                     dir("$API_CONTEXT_DIR") {
                                         newImage = '''
                                             images:
-                                              - name: $IMAGE_REGISTRY/$API_DEV_NAMESPACE/$API_NAME
-                                                newName: $IMAGE_REGISTRY/$API_PROD_NAMESPACE/$API_NAME
+                                              - name: $IMAGE_REGISTRY_URL/$API_DEV_NAMESPACE/$API_NAME
+                                                newName: $IMAGE_REGISTRY_URL/$API_PROD_NAMESPACE/$API_NAME
                                                 newTag: $VERSION-$BUILD_NUMBER
                                             '''.stripIndent()
                                         
                                         sh "echo \"$newImage\" >> ./manifests/overlays/prod/kustomization.yaml"
-
                                         openshift.raw("apply -k ./manifests/overlays/prod")
-
                                         openshift.selector("deployment/$API_NAME").rollout().status()
                                     }
                                 }
@@ -191,6 +211,21 @@ spec:
                         }
                     }
                 }
+                stage("Import OpenAPI PROD") {
+                    agent {
+                        label "jenkins-3scale-toolbox-agent"
+                    }
+                    steps {
+                        unstash "repo"
+
+                        sh "3scale remote add $API_PROD_TENANT $PROD_TENANT_REMOTE --insecure"
+
+                        dir("$API_CONTEXT_DIR") {
+                            sh "3scale import openapi --insecure -d $API_PROD_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_PROD -t $API_NAME --skip-openapi-validation --default-credentials-userkey=123456789"
+                        }
+                        
+                        sh "3scale proxy-config promote $API_PROD_TENANT $API_NAME --insecure"
+                    }
+                }
             }    
         }
-    type: JenkinsPipeline

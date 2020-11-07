@@ -12,7 +12,7 @@ oc create namespace 3scale
 * OpenShift Container Storage 4 (for the RWX storage needed by 3scale)
 
 ```bash
-export WILDCARD_DOMAIN=apps.nano.80bd.sandbox847.opentlc.com
+export WILDCARD_DOMAIN=apps.pepper.40cd.sandbox45.opentlc.com
 
 echo "apiVersion: apps.3scale.net/v1alpha1
 kind: APIManager
@@ -87,7 +87,7 @@ spec:
     namespace: 3scale" | oc apply -f - -n 3scale
 ```
 
-## 3scale Toolbox (Manual steps)
+## Importing and promoting the API with 3scale Toolbox manually (Optional)
 
 ```bash
 export TEST_TENANT_ADMIN_URL=${$(oc get secret test-tenant-secret -o json -n 3scale | jq -r .data.adminURL | base64 --decode -)#https://}
