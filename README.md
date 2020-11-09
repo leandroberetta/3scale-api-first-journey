@@ -1,8 +1,6 @@
-# API First Journey with 3scale
+# Contract First Journey with 3scale
 
-Work in progress.
-
-This repository is a PoC of an API First approach using technologies like Apicurio, Microcks and 3scale on OpenShift.
+This repository is a PoC of a Contract First approach using technologies like Apicurio, Microcks and 3scale on OpenShift.
 
 ## Journey
 
