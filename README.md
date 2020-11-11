@@ -20,6 +20,7 @@ This repository is a PoC of a Contract First approach using technologies like Ap
 
 1. [Microcks](./microcks/README.md)
 2. [Apicurio](./apicurio/README.md)
-3. [3scale](./3scale/README.md)
+3. [3scale](./3scale/install/README.md)
 4. [Jenkins](./jenkins/README.md)
 5. [Pipeline](./jenkins/pipeline/README.md)
+6. [API Usage](./3scale/usage/README.md)
