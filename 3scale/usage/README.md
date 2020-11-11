@@ -3,7 +3,7 @@
 ## Prerequisites
 
 * 3scale installed and configured
-* a pipeline run executed and finished successfully
+* A pipeline run finished successfully
 
 ## Configuration
 
