@@ -168,7 +168,7 @@ spec:
                         sh "3scale remote add $API_TEST_TENANT $TEST_TENANT_REMOTE --insecure"
 
                         dir("$API_CONTEXT_DIR") {
-                            sh "3scale import openapi --insecure -d $API_TEST_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_TEST -t $API_NAME --skip-openapi-validation --default-credentials-userkey=123456789"
+                            sh "3scale import openapi --insecure -d $API_TEST_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_TEST -t $API_NAME --skip-openapi-validation"
                         }
                         
                         sh "3scale proxy-config promote $API_TEST_TENANT $API_NAME --insecure"
@@ -221,7 +221,7 @@ spec:
                         sh "3scale remote add $API_PROD_TENANT $PROD_TENANT_REMOTE --insecure"
 
                         dir("$API_CONTEXT_DIR") {
-                            sh "3scale import openapi --insecure -d $API_PROD_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_PROD -t $API_NAME --skip-openapi-validation --default-credentials-userkey=123456789"
+                            sh "3scale import openapi --insecure -d $API_PROD_TENANT $API_OPENAPI_SPEC_FILE --override-private-base-url=$API_BACKEND_PROD -t $API_NAME --skip-openapi-validation"
                         }
                         
                         sh "3scale proxy-config promote $API_PROD_TENANT $API_NAME --insecure"
