@@ -11,7 +11,7 @@ oc create namespace apicurio
 Then, create the application resources with a template:
 
 ```bash
-export WILDCARD_DOMAIN=apps.nano.80bd.sandbox847.opentlc.com
+export WILDCARD_DOMAIN=apps.pepper.87ff.sandbox1678.opentlc.com
 
 oc process -f apicurio-template.yaml \
     -p UI_ROUTE=apicurio-studio.$WILDCARD_DOMAIN \
@@ -38,7 +38,7 @@ To integrate Apicurio with Microcks some parameters needs to be configured in th
 
 ![apicurio](./images/apicurio3.png)
 
-The next commands gather some data querying the API of Microcks Keycloak:
+The next commands gather some data querying the API of Keycloak (Microcks):
 
 ```bash
 export MICROCKS_KEYCLOAK_ADMIN=$(oc get secret microcks-keycloak-admin -o json -n microcks | jq -r .data.username | base64 --decode -)

@@ -33,6 +33,8 @@ spec:
   features:
     async:
       enabled: false
+      kafka:
+        install: false
   keycloak:
     install: true
     persistent: true

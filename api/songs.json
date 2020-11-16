@@ -10,18 +10,6 @@
             "get": {
                 "parameters": [
                     {
-                        "examples": {
-                            "Get all with filter": {
-                                "value": [
-                                    {
-                                        "id": 2,
-                                        "name": "Californication",
-                                        "artist": "Red Hot Chili Peppers",
-                                        "album": "Californication"
-                                    }
-                                ]
-                            }
-                        },
                         "name": "filter",
                         "description": "",
                         "schema": {
@@ -41,16 +29,16 @@
                                     }
                                 },
                                 "examples": {
-                                    "Get all": {
+                                    "Get": {
                                         "value": [
                                             {
-                                                "id": 2,
+                                                "id": 1,
                                                 "name": "Even Flow",
                                                 "artist": "Pearl Jam",
                                                 "album": "Ten"
                                             },
                                             {
-                                                "id": 3,
+                                                "id": 2,
                                                 "name": "Californication",
                                                 "artist": "Red Hot Chili Peppers",
                                                 "album": "Californication"
@@ -92,7 +80,7 @@
                                     "$ref": "#/components/schemas/Song"
                                 },
                                 "examples": {
-                                    "Create response": {
+                                    "Create": {
                                         "value": {
                                             "id": 3,
                                             "name": "Californication",
@@ -122,11 +110,6 @@
             "get": {
                 "parameters": [
                     {
-                        "examples": {
-                            "Get with id": {
-                                "value": "1"
-                            }
-                        },
                         "name": "id",
                         "schema": {
                             "type": "integer"
@@ -143,12 +126,12 @@
                                     "$ref": "#/components/schemas/Song"
                                 },
                                 "examples": {
-                                    "Get with id": {
+                                    "Get": {
                                         "value": {
                                             "id": 1,
-                                            "name": "Californication",
-                                            "artist": "Red Hot Chili Peppers",
-                                            "album": "Californication"
+                                            "name": "Even Flow",
+                                            "artist": "Pearl Jam",
+                                            "album": "Ten"
                                         }
                                     }
                                 }
@@ -172,9 +155,9 @@
                                 "Update": {
                                     "value": {
                                         "id": 1,
-                                        "name": "Californication",
-                                        "artist": "Red Hot Chili Peppers",
-                                        "album": "Californication"
+                                        "name": "Even Flow",
+                                        "artist": "Pearl Jam",
+                                        "album": "Ten"
                                     }
                                 }
                             }
@@ -184,11 +167,6 @@
                 },
                 "parameters": [
                     {
-                        "examples": {
-                            "Update with id": {
-                                "value": "1"
-                            }
-                        },
                         "name": "id",
                         "schema": {
                             "type": "integer"
@@ -205,12 +183,12 @@
                                     "$ref": "#/components/schemas/Song"
                                 },
                                 "examples": {
-                                    "Update response": {
+                                    "Update": {
                                         "value": {
                                             "id": 1,
-                                            "name": "Californication",
-                                            "artist": "Red Hot Chili Peppers",
-                                            "album": "Californication"
+                                            "name": "Even Flow",
+                                            "artist": "Pearl Jam",
+                                            "album": "Ten"
                                         }
                                     }
                                 }
@@ -226,11 +204,6 @@
             "delete": {
                 "parameters": [
                     {
-                        "examples": {
-                            "Delete with id": {
-                                "value": "1"
-                            }
-                        },
                         "name": "id",
                         "schema": {
                             "type": "integer"
@@ -272,20 +245,30 @@
                         "type": "string"
                     },
                     "artist": {
+                        "description": "",
                         "type": "string"
                     },
                     "id": {
                         "type": "integer"
                     },
                     "album": {
+                        "description": "",
                         "type": "string"
                     }
                 },
                 "example": {
+                    "id": 1,
                     "name": "Even Flow",
                     "artist": "Pearl Jam",
-                    "lyricsId": "5f0e3eafba80b5001a43e08e"
+                    "album": "Ten"
                 }
+            }
+        },
+        "securitySchemes": {
+            "api-key": {
+                "type": "apiKey",
+                "name": "user_key",
+                "in": "header"
             }
         }
     }
