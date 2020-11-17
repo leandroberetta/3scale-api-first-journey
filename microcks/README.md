@@ -25,7 +25,7 @@ metadata:
   name: microcks
 spec:
   name: microcks
-  version: 1.0.0
+  version: 1.1.0
   microcks:
     replicas: 1
   postman:
@@ -33,8 +33,6 @@ spec:
   features:
     async:
       enabled: false
-      kafka:
-        install: false
   keycloak:
     install: true
     persistent: true

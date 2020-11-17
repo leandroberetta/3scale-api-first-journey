@@ -268,7 +268,7 @@
             "api-key": {
                 "type": "apiKey",
                 "name": "user_key",
-                "in": "header"
+                "in": "query"
             }
         }
     },

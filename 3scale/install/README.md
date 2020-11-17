@@ -1,11 +1,16 @@
 # 3scale
 
-## Prerequisites
+The recommended way to install 3scale is with the operator.
 
-* 3scale 2.9 Operator installed in 3cale namespace
-* OpenShift Container Storage 4 (for the RWX storage needed by 3scale)
+First, create a namespace for 3scale:
 
-## Installation
+```bash
+oc create namespace 3scale
+```
+
+Then, install the 3scale operator from OperatorHub (in 3scale namespace) and wait for the installation to end.
+
+After the installation succeeds, create the following CR:
 
 ```bash
 oc create namespace 3scale
@@ -24,6 +29,8 @@ spec:
         storageClassName: ocs-storagecluster-cephfs
   wildcardDomain: $WILDCARD_DOMAIN" | oc apply -f - -n 3scale
 ```
+
+NOTE: A PersistentVolume with RWX access is required, the recommended approach is to install OpenShift Container Storage.
 
 ## Tenants
 
@@ -45,8 +52,8 @@ metadata:
 spec:
   username: admin-test
   systemMasterUrl: https://master.$WILDCARD_DOMAIN
-  email: admin-test@songs.com
-  organizationName: Songs (TEST)
+  email: admin-test@music.com
+  organizationName: Music (TEST)
   masterCredentialsRef:
     name: system-seed
   passwordCredentialsRef:
@@ -74,8 +81,8 @@ metadata:
 spec:
   username: admin-prod
   systemMasterUrl: https://master.$WILDCARD_DOMAIN
-  email: admin-prod@songs.com
-  organizationName: Songs (PROD)
+  email: admin-prod@music.com
+  organizationName: Music (PROD)
   masterCredentialsRef:
     name: system-seed
   passwordCredentialsRef:
