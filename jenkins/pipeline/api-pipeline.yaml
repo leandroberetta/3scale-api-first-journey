@@ -9,7 +9,7 @@ spec:
     jenkinsPipelineStrategy:
       env:
         - name: GIT_REPO_URL
-          value: https://github.com/leandroberetta/3scale-api-first-journey
+          value: https://github.com/leandroberetta/3scale-contract-first-journey
         - name: GIT_REPO_BRANCH
           value: master
         - name: IMAGE_REGISTRY_URL

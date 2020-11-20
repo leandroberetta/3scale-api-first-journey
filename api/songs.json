@@ -238,7 +238,7 @@
             "Song": {
                 "title": "Root Type for Song",
                 "description": "",
-                "required": [],
+                "required": ["name"],
                 "type": "object",
                 "properties": {
                     "name": {
