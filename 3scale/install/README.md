@@ -13,9 +13,7 @@ Then, install the 3scale operator from OperatorHub (in 3scale namespace) and wai
 After the installation succeeds, create the following CR:
 
 ```bash
-oc create namespace 3scale
-
-export WILDCARD_DOMAIN=apps.pepper.87ff.sandbox1678.opentlc.com
+export WILDCARD_DOMAIN=apps.pepper.b984.sandbox286.opentlc.com
 
 echo "apiVersion: apps.3scale.net/v1alpha1
 kind: APIManager

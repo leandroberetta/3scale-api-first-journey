@@ -16,7 +16,7 @@ export TEST_TENANT_ACCESS_KEY=$(oc get secret test-tenant-secret -o json -n 3sca
 3scale application-plan apply test-tenant songs basic -n "Basic" --default --insecure
 3scale application create test-tenant john songs basic songs --application-id=songs --user-key 123456789 --description=Songs --insecure
 
-curl -k "https://songs-music-test-apicast-production.$WILDCARD_DOMAIN/api/songs?user_key=123456789"
+curl -k "https://songs-music-test-apicast-staging.$WILDCARD_DOMAIN/api/songs?user_key=123456789"
 ```
 
 ### PROD
